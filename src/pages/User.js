@@ -43,9 +43,8 @@ export default function User() {
 
   // navigation
   const navigation = useNavigation()
-
   // function to create an user into firebase
-  const createUserFirebase = (email, password) => {
+  const createUserFirebase = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
@@ -56,6 +55,7 @@ export default function User() {
       .catch((error) => {
         const errorCode = error.code
         const errorMessage = error.message
+        console.log(errorMessage)
         setMsgError({ ErrorCode: errorCode, MsgError: errorMessage })
         showToast(errorCode)
         // ..
@@ -78,10 +78,11 @@ export default function User() {
     try {
       if (userFirebase.uid) {
         const response = await api.post(`/user`, newUser)
-        console.debug("user", response)
         showToast("Usuário cadastrado com sucesso!")
+        setTimeout(() => {
+          navigation.navigate("SignIn")
+        }, 2000)
         handleClear()
-        navigation.navigate("SignIn")
       } else {
         showToast(`${msgError.ErrorCode} - ${msgError.MsgError}`)
       }
@@ -91,18 +92,18 @@ export default function User() {
   }
 
   const handleClear = () => {
-    name = ""
-    lastName = ""
-    nickName = ""
-    email = ""
-    kinship = {
+    setName("")
+    setLastName("")
+    setNickName("")
+    setEmail("")
+    setKinship({
       description: "Parentesco",
       icon: "account-multiple",
-    }
-    password = ""
-    confirmPassword = ""
-    userFirebase = ""
-    msgError = ""
+    })
+    setPassword("")
+    setConfirmPassword("")
+    setUserFirebase("")
+    setMsgError("")
   }
 
   return (
@@ -120,8 +121,7 @@ export default function User() {
           style={styles.input}
           placeholder='Digite seu nome'
           value={name}
-          onChange={(e) => setName(e)}
-          focusable={true}
+          onChangeText={(e) => setName(e)}
         />
 
         <Text style={styles.title}>Sobrenome</Text>
@@ -129,7 +129,7 @@ export default function User() {
           style={styles.input}
           placeholder='Digite seu sobrenome'
           value={lastName}
-          onChange={(e) => setLastName(e)}
+          onChangeText={(e) => setLastName(e)}
         />
 
         <Text style={styles.title}>Apelido</Text>
@@ -137,7 +137,7 @@ export default function User() {
           style={styles.input}
           placeholder='Digite seu apelido'
           value={nickName}
-          onChange={(e) => setNickName(e)}
+          onChangeText={(e) => setNickName(e)}
         />
 
         <Text style={styles.title}>Email</Text>
@@ -145,7 +145,7 @@ export default function User() {
           style={styles.input}
           placeholder='Digite seu email'
           value={email}
-          onChange={(e) => setEmail(e)}
+          onChangeText={(e) => setEmail(e)}
           keyboardType='email-address'
         />
 
@@ -179,7 +179,7 @@ export default function User() {
           style={styles.input}
           placeholder='Digite sua senha'
           value={password}
-          onChange={(e) => setPassword(e)}
+          onChangeText={(e) => setPassword(e)}
           secureTextEntry={true}
         />
 
@@ -188,7 +188,7 @@ export default function User() {
           style={styles.input}
           placeholder='Confirme sua senha'
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e)}
+          onChangeText={(e) => setConfirmPassword(e)}
           secureTextEntry={true}
         />
 

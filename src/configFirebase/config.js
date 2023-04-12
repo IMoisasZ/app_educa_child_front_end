@@ -1,3 +1,5 @@
+// Import the functions you need from the SDKs you need
+// import { getAnalytics } from "firebase/analytics"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app"
@@ -10,12 +12,13 @@ import {
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyB3INhp_49x1J8VMOmwtzQWpvakOJlZm48",
-  authDomain: "app-mizp-educa-a5738.firebaseapp.com",
-  projectId: "app-mizp-educa-a5738",
-  storageBucket: "app-mizp-educa-a5738.appspot.com",
-  messagingSenderId: "569332248847",
-  appId: "1:569332248847:web:d4b92992a646a196e2ce7a",
+  apiKey: "AIzaSyC2bjCFLMA82fo1IVJeVb4ZVol506ZPIaQ",
+  authDomain: "app-mizp-educa-cbef9.firebaseapp.com",
+  projectId: "app-mizp-educa-cbef9",
+  storageBucket: "app-mizp-educa-cbef9.appspot.com",
+  messagingSenderId: "501007244545",
+  appId: "1:501007244545:web:db4b9e1f4762ec35db4f00",
+  measurementId: "G-R70M09XLKG",
 }
 
 // Initialize Firebase
@@ -26,3 +29,5 @@ const auth = initializeAuth(app, {
 })
 
 export { auth }
+
+// const analytics = getAnalytics(app)

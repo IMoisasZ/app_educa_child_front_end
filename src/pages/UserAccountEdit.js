@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import {
   Text,
   TextInput,
@@ -8,9 +8,14 @@ import {
 } from "react-native"
 import Select from "../components/Select"
 import { List } from "react-native-paper"
-import { listKinship } from "../utils/defaultList"
+import { AuthContext } from "../contexts/auth"
+// import { listKinship } from "../utils/defaultList"
+import { useNavigation } from "@react-navigation/native"
 import UserAccountChangePassword from "./UserAccountChangePassword"
 import * as Animatable from "react-native-animatable"
+import api from "../api/api"
+import { log } from "react-native-reanimated"
+import { showToast } from "../utils/toast"
 
 export default function UserAccountEdit({ user, status }) {
   const [name, setName] = useState("")
@@ -19,17 +24,53 @@ export default function UserAccountEdit({ user, status }) {
   const [email, setEmail] = useState("")
   const [kinship, setKinship] = useState({ id: "", description: "Parentesco" })
   const [statusChangePassword, setStatusChangePassword] = useState("editUser")
+  const [listKinship, setListKinship] = useState([])
+
+  // list kinship
+  const allKinship = async () => {
+    const response = await api.get(`/kinship`)
+    setListKinship(response.data)
+  }
+
+  useEffect(() => {
+    allKinship()
+  }, [])
+
+  console.log(listKinship)
 
   useEffect(() => {
     setName(user.name)
     setLastname(user.lastName)
     setNickname(user.nickName)
     setEmail(user.email)
-    const dataKinship = listKinship.find((item) => (item.id = user.kinship_id))
-    setKinship({ id: dataKinship.id, description: dataKinship.description })
+    // dataKinship()
   }, [])
 
-  const handleChangeUser = () => {}
+  const { userLogned } = useContext(AuthContext)
+
+  // navigation
+  const navigation = useNavigation()
+
+  const handleChangeUser = async () => {
+    const userData = {
+      id: userLogned.id,
+      id_user_firebase: userLogned.id_user_firebase,
+      name,
+      lastName: lastname,
+      nickName: nickname,
+      kinship_id: kinship.id,
+      email,
+    }
+    try {
+      await api.patch(`/user`, userData)
+      showToast("Dados do usuário alterado com sucesso!")
+      setTimeout(() => {
+        status("user")
+      }, 2000)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -99,13 +140,18 @@ export default function UserAccountEdit({ user, status }) {
               name={kinship.description}
               value={kinship.description}
               icon={kinship.icon}>
-              {listKinship.map((item) => {
+              {listKinship.map((item, index) => {
                 return (
                   <List.Item
-                    key={item.id}
+                    key={index}
                     title={item.description}
                     value={item.id}
-                    onChangeText={() => handleChangeKinship(item)}
+                    onPress={() =>
+                      setKinship({
+                        id: item.id,
+                        description: item.description,
+                      })
+                    }
                     left={(props) => (
                       <List.Icon
                         {...props}

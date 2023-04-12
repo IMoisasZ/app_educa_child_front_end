@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react"
 import { View, Text, StyleSheet } from "react-native"
-import Container from "../components/Container"
 import { List } from "react-native-paper"
 import { AuthContext } from "../contexts/auth"
 import api from "../api/api"
@@ -43,87 +42,115 @@ export default function DashBoard() {
     allDataEvents()
   }, [])
 
-  return (
-    <View style={styles.container}>
-      {listDataEvent
-        ? listChild.map((item) => {
-            return (
-              <Animatable.View
-                style={{ marginBottom: 10, marginStart: "2%", marginEnd: "2%" }}
-                animation='fadeInUp'
-                key={item.id}>
-                <List.Accordion
-                  title={item.nickName}
-                  titleStyle={{
-                    color: "#fff",
-                    fontWeight: "800",
-                    fontSize: 22,
+  if (listDataEvent.length > 0) {
+    return (
+      <View style={styles.container}>
+        {listDataEvent
+          ? listChild.map((item) => {
+              return (
+                <Animatable.View
+                  style={{
+                    marginBottom: 10,
+                    marginStart: "2%",
+                    marginEnd: "2%",
                   }}
-                  id='1'
-                  style={
-                    item.gender_id === 2
-                      ? styles.main_accordion_feminino
-                      : styles.main_accordion_masculino
-                  }>
-                  {listDataEvent
-                    .filter((childId) => childId.child_id === item.id)
-                    .map((itemEvent) => {
-                      return (
-                        <List.Accordion
-                          key={itemEvent.id}
-                          style={
-                            item.gender_id === 2
-                              ? styles.second_accordion_feminino
-                              : styles.second_accordion_masculino
-                          }
-                          titleStyle={{
-                            color: "#000",
-                            fontWeight: "800",
-                            fontSize: 18,
-                          }}
-                          title={itemEvent.event.description}
-                          id='1'
-                          left={(props) => {
-                            return (
-                              <List.Icon {...props} icon='star' color='#fff' />
-                            )
-                          }}>
-                          <View style={styles.container_points}>
-                            <View style={styles.point}>
-                              <Text style={styles.text_points}>
-                                {itemEvent.point}
-                              </Text>
-                              <Text style={styles.text_points_name}>
-                                Pontos
-                              </Text>
+                  animation='fadeInUp'
+                  key={item.id}>
+                  <List.Accordion
+                    title={item.nickName}
+                    titleStyle={{
+                      color: "#fff",
+                      fontWeight: "800",
+                      fontSize: 22,
+                    }}
+                    id='1'
+                    style={
+                      item.gender_id === 2
+                        ? styles.main_accordion_feminino
+                        : styles.main_accordion_masculino
+                    }>
+                    {listDataEvent
+                      .filter((childId) => childId.child_id === item.id)
+                      .map((itemEvent) => {
+                        return (
+                          <List.Accordion
+                            key={itemEvent.id}
+                            style={
+                              item.gender_id === 2
+                                ? styles.second_accordion_feminino
+                                : styles.second_accordion_masculino
+                            }
+                            titleStyle={{
+                              color: "#000",
+                              fontWeight: "800",
+                              fontSize: 18,
+                            }}
+                            title={itemEvent.event.description}
+                            id='1'
+                            left={(props) => {
+                              return (
+                                <List.Icon
+                                  {...props}
+                                  icon='star'
+                                  color='#fff'
+                                />
+                              )
+                            }}>
+                            <View style={styles.container_points}>
+                              <View style={styles.point}>
+                                <Text style={styles.text_points}>
+                                  {itemEvent.point}
+                                </Text>
+                                <Text style={styles.text_points_name}>
+                                  Pontos
+                                </Text>
+                              </View>
+                              <View style={styles.point}>
+                                <Text style={styles.text_points}>
+                                  {itemEvent.meriter}
+                                </Text>
+                                <Text style={styles.text_points_name}>
+                                  Meritos
+                                </Text>
+                              </View>
+                              <View style={styles.point}>
+                                <Text style={styles.text_points}>
+                                  {itemEvent.demeriter}
+                                </Text>
+                                <Text style={styles.text_points_name}>
+                                  Demeritos
+                                </Text>
+                              </View>
                             </View>
-                            <View style={styles.point}>
-                              <Text style={styles.text_points}>
-                                {itemEvent.meriter}
-                              </Text>
-                              <Text style={styles.text_points_name}>
-                                Meritos
-                              </Text>
-                            </View>
-                            <View style={styles.point}>
-                              <Text style={styles.text_points}>
-                                {itemEvent.demeriter}
-                              </Text>
-                              <Text style={styles.text_points_name}>
-                                Demeritos
-                              </Text>
-                            </View>
-                          </View>
-                        </List.Accordion>
-                      )
-                    })}
-                </List.Accordion>
-              </Animatable.View>
-            )
-          })
-        : ""}
-    </View>
-  )
+                          </List.Accordion>
+                        )
+                      })}
+                  </List.Accordion>
+                </Animatable.View>
+              )
+            })
+          : ""}
+      </View>
+    )
+  } else {
+    return (
+      <Animatable.View
+        style={[
+          styles.container,
+          { alignItems: "center", justifyContent: "center" },
+        ]}>
+        <Animatable.View>
+          <Animatable.Text
+            animation='pulse'
+            easing='ease-out'
+            iterationCount='infinite'
+            style={{ color: "#fff", fontWeight: "600", fontSize: 18 }}>
+            Não há crianças cadastradas!
+          </Animatable.Text>
+        </Animatable.View>
+      </Animatable.View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import {
   Text,
   TextInput,
@@ -7,10 +7,13 @@ import {
   StyleSheet,
 } from "react-native"
 import * as Animatable from "react-native-animatable"
+import { AuthContext } from "../contexts/auth"
 
 export default function UserAccountChangePassword({ statusChangePassword }) {
   const [password, setPassword] = useState("")
   const [confirmePassword, setConfirmPassword] = useState("")
+
+  const { userLogned } = useContext(AuthContext)
 
   const handleOnChangePassword = () => {}
   return (
@@ -23,6 +26,14 @@ export default function UserAccountChangePassword({ statusChangePassword }) {
       </Animatable.View>
 
       <Animatable.View style={styles.containerForm} animation='fadeInUp'>
+        <Text style={styles.title}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder='Digite seu email'
+          value={userLogned.email}
+          editable={false}
+        />
+
         <Text style={styles.title}>Senha</Text>
         <TextInput
           style={styles.input}

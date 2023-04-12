@@ -6,10 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native"
-import Container from "../components/Container"
-import Input from "../components/Input"
-// import Button from "../components/Button"
-import Divider from "../components/Divider"
 import { useNavigation } from "@react-navigation/native"
 import { AuthContext } from "../contexts/auth"
 import { showToast } from "../utils/toast"
@@ -18,7 +14,7 @@ import * as Animatable from "react-native-animatable"
 
 export default function SignIn() {
   // usestate
-  const [email, setEmail] = useState("mopri08@gmail.com")
+  const [email, setEmail] = useState("pri283@hotmail.com")
   const [password, setPassword] = useState("123456")
   const [dataUser, setDataUser] = useState([])
 
@@ -69,6 +65,7 @@ export default function SignIn() {
           placeholder='Digite um Email'
           style={styles.input}
           value={email}
+          onChangeText={(e) => setEmail(e)}
           keyboardType='email-address'
         />
 
@@ -77,6 +74,7 @@ export default function SignIn() {
           placeholder='Sua senha'
           style={styles.input}
           value={password}
+          onChangeText={(e) => setPassword(e)}
           secureTextEntry={true}
         />
 
