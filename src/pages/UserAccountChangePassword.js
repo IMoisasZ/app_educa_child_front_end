@@ -8,14 +8,78 @@ import {
 } from "react-native"
 import * as Animatable from "react-native-animatable"
 import { AuthContext } from "../contexts/auth"
+import api from "../api/api"
+import {
+  getAuth,
+  updatePassword,
+  reauthenticateWithCredential,
+} from "firebase/auth"
+import { showToast } from "../utils/toast"
 
 export default function UserAccountChangePassword({ statusChangePassword }) {
   const [password, setPassword] = useState("")
-  const [confirmePassword, setConfirmPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
 
+  const auth = getAuth()
   const { userLogned } = useContext(AuthContext)
+  const user = auth.currentUser
 
-  const handleOnChangePassword = () => {}
+  const handleReautenticUser = () => {
+    // TODO(you): prompt the user to re-provide their sign-in credentials
+    const credential = promptForCredentials()
+    reauthenticateWithCredential(user, credential)
+      .then(() => {
+        // User re-authenticated.
+        console.log(user)
+      })
+      .catch((error) => {
+        // An error ocurred
+        // ...
+        console.log({ error })
+      })
+  }
+
+  const handleChagePasswordOnFirebase = () => {
+    const newPassword = password
+    updatePassword(user, newPassword)
+      .then(() => {
+        // Update successful.
+        showToast("Senha alterada com sucesso!")
+        setTimeout(() => {
+          setPassword("")
+          setConfirmPassword("")
+          statusChangePassword("editUser")
+        }, 2000)
+      })
+      .catch((error) => {
+        // An error ocurred
+        // ...
+        console.log({ error })
+      })
+  }
+
+  const handleOnChangePassword = async () => {
+    if (!password) {
+      return showToast("Senha não informada!")
+    }
+    if (!confirmPassword) {
+      return showToast("A confirmação da senha não foi informada")
+    }
+    if (password !== confirmPassword) {
+      return showToast("As senhas não conferem!")
+    }
+    try {
+      await api.put("user", {
+        id: userLogned.id,
+        password,
+        confirmPassword,
+      })
+      handleChagePasswordOnFirebase()
+      handleReautenticUser()
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <View style={styles.container}>
       <Animatable.View
@@ -47,7 +111,7 @@ export default function UserAccountChangePassword({ statusChangePassword }) {
         <TextInput
           style={styles.input}
           placeholder='Confirme sua senha'
-          value={confirmePassword}
+          value={confirmPassword}
           onChangeText={(e) => setConfirmPassword(e)}
           secureTextEntry={true}
         />

@@ -221,14 +221,14 @@ export default function Release() {
                 value={isSwitchOnMerito}
                 onToggleSwitch={toggleSwitchMerito}
                 color='green'
-                nameSwitch='Merito'
+                nameSwitch='Mérito'
               />
 
               <Switch
                 value={isSwitchOnDemerito}
                 onToggleSwitch={toggleSwitchDemerito}
                 color='red'
-                nameSwitch='Demerito'
+                nameSwitch='Demérito'
               />
             </View>
 

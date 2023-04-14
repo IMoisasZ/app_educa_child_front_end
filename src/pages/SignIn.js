@@ -9,42 +9,26 @@ import {
 import { useNavigation } from "@react-navigation/native"
 import { AuthContext } from "../contexts/auth"
 import { showToast } from "../utils/toast"
-import api from "../api/api"
 import * as Animatable from "react-native-animatable"
 
 export default function SignIn() {
   // usestate
-  const [email, setEmail] = useState("pri283@hotmail.com")
-  const [password, setPassword] = useState("123456")
-  const [dataUser, setDataUser] = useState([])
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
   // context
   const { login } = useContext(AuthContext)
-
-  // data user mysql
-  const getDataUser = async () => {
-    try {
-      const response = await api.get(`/user?email=${email}`)
-      setDataUser(response.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    getDataUser()
-  }, [email])
 
   // navigation
   const navigation = useNavigation()
 
   // functions
   const handleAuth = async () => {
+    if (!email) {
+      return showToast("Email não informado!")
+    }
     try {
-      if (dataUser) {
-        console.log(email, password, dataUser)
-        login(email, password, dataUser)
-      }
+      login(email, password)
     } catch (error) {
       showToast(error)
     }

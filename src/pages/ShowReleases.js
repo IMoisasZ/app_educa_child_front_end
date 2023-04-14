@@ -136,7 +136,7 @@ export default function ShowReleases() {
           <Switch
             value={isSwitchOnMerito}
             onToggleSwitch={toggleSwitchMerito}
-            key={1}
+            // key={1}
             color='green'
             nameSwitch='Merito'
           />
@@ -144,7 +144,7 @@ export default function ShowReleases() {
           <Switch
             value={isSwitchOnDemerito}
             onToggleSwitch={toggleSwitchDemerito}
-            key={2}
+            // key={2}
             color='red'
             nameSwitch='Demerito'
           />

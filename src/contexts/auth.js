@@ -3,6 +3,8 @@ import { useNavigation } from "@react-navigation/native"
 import { getAuth, signOut, signInWithEmailAndPassword } from "firebase/auth"
 import { showToast } from "../utils/toast"
 import { app } from "../configFirebase/config"
+import api from "../api/api"
+import { shadow } from "react-native-paper"
 
 export const AuthContext = createContext({})
 
@@ -18,25 +20,39 @@ export default function AuthProvider({ children }) {
   initializeApp()
   const auth = getAuth()
 
+  // data user mysql
+  const getDataUser = async (email) => {
+    try {
+      const response = await api.get(`/user/email/email_user?email=${email}`)
+
+      setUserLogned(response.data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   // functon login
-  const login = async (email, password, dataUser) => {
+  const login = async (email, password) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user
-        setUserLogned(dataUser[0])
-        showToast(`Bem vindo ${dataUser[0].name}`)
-        console.log(user)
+        getDataUser(email)
+
+        showToast(`Bem vindo (a)`)
+
         navigation.navigate("DashBoard")
         // ...
       })
       .catch((error) => {
-        error.code === "auth/invalid-email" &&
-          showToast("Email não existente ou não informado!")
+        error.code === "auth/user-not-found" && showToast("Email inválido!")
+        error.code === "auth/invalid-email" && showToast("Email inválido!!")
+        error.code === " auth/missing-password" &&
+          showToast("Senha não informada!")
         error.code === "auth/internal-error" &&
           showToast("Senha não informada!")
         error.code === "auth/wrong-password" &&
-          showToast("Email ou senha inválida!")
+          showToast("Email ou senha inválido!")
         const errorCode = error.code
         const errorMessage = error.message
         console.log(error.code)

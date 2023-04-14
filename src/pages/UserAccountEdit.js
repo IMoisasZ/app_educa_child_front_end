@@ -9,12 +9,11 @@ import {
 import Select from "../components/Select"
 import { List } from "react-native-paper"
 import { AuthContext } from "../contexts/auth"
-// import { listKinship } from "../utils/defaultList"
+import { listKinship } from "../utils/defaultList"
 import { useNavigation } from "@react-navigation/native"
 import UserAccountChangePassword from "./UserAccountChangePassword"
 import * as Animatable from "react-native-animatable"
 import api from "../api/api"
-import { log } from "react-native-reanimated"
 import { showToast } from "../utils/toast"
 
 export default function UserAccountEdit({ user, status }) {
@@ -24,26 +23,14 @@ export default function UserAccountEdit({ user, status }) {
   const [email, setEmail] = useState("")
   const [kinship, setKinship] = useState({ id: "", description: "Parentesco" })
   const [statusChangePassword, setStatusChangePassword] = useState("editUser")
-  const [listKinship, setListKinship] = useState([])
-
-  // list kinship
-  const allKinship = async () => {
-    const response = await api.get(`/kinship`)
-    setListKinship(response.data)
-  }
-
-  useEffect(() => {
-    allKinship()
-  }, [])
-
-  console.log(listKinship)
 
   useEffect(() => {
     setName(user.name)
     setLastname(user.lastName)
     setNickname(user.nickName)
     setEmail(user.email)
-    // dataKinship()
+    const dataKinship = listKinship.find((it) => it.id === user.kinship_id)
+    setKinship({ id: dataKinship.id, description: dataKinship.description })
   }, [])
 
   const { userLogned } = useContext(AuthContext)

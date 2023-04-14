@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
 } from "react-native"
 import Select from "../components/Select"
 import { List } from "react-native-paper"
@@ -64,6 +65,30 @@ export default function User() {
 
   // create an user to mysql and firebase
   const createUser = async () => {
+    if (!name) {
+      return showToast("Nome não informado!")
+    }
+    if (!lastName) {
+      return showToast("Sobrenome não informado!")
+    }
+    if (!email) {
+      return showToast("Email não informado!")
+    }
+    if (!email.includes("@")) {
+      return showToast("Email inválido!")
+    }
+    if (kinship.description === "Parentesco") {
+      return showToast("Selecione um tipo de parentestco!")
+    }
+    if (!password) {
+      return showToast("Senha não informada!")
+    }
+    if (!confirmPassword) {
+      return showToast("A confirmação da senha não informada!")
+    }
+    if (password !== confirmPassword) {
+      return showToast("As senhas não conferem!")
+    }
     createUserFirebase(email, password)
     const newUser = {
       user_id_firebase: userFirebase.uid,
@@ -107,96 +132,98 @@ export default function User() {
   }
 
   return (
-    <View style={styles.container}>
-      <Animatable.View
-        style={styles.containerHeader}
-        animation='fadeInLeft'
-        delay={500}>
-        <Text style={styles.message}>Preencha os dados abaixo:</Text>
-      </Animatable.View>
+    <ScrollView>
+      <View style={styles.container}>
+        <Animatable.View
+          style={styles.containerHeader}
+          animation='fadeInLeft'
+          delay={500}>
+          <Text style={styles.message}>Preencha os dados abaixo:</Text>
+        </Animatable.View>
 
-      <Animatable.View style={styles.containerForm} animation='fadeInUp'>
-        <Text style={styles.title}>Nome</Text>
-        <TextInput
-          style={styles.input}
-          placeholder='Digite seu nome'
-          value={name}
-          onChangeText={(e) => setName(e)}
-        />
+        <Animatable.View style={styles.containerForm} animation='fadeInUp'>
+          <Text style={styles.title}>Nome</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Digite seu nome'
+            value={name}
+            onChangeText={(e) => setName(e)}
+          />
 
-        <Text style={styles.title}>Sobrenome</Text>
-        <TextInput
-          style={styles.input}
-          placeholder='Digite seu sobrenome'
-          value={lastName}
-          onChangeText={(e) => setLastName(e)}
-        />
+          <Text style={styles.title}>Sobrenome</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Digite seu sobrenome'
+            value={lastName}
+            onChangeText={(e) => setLastName(e)}
+          />
 
-        <Text style={styles.title}>Apelido</Text>
-        <TextInput
-          style={styles.input}
-          placeholder='Digite seu apelido'
-          value={nickName}
-          onChangeText={(e) => setNickName(e)}
-        />
+          <Text style={styles.title}>Apelido</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Digite seu apelido'
+            value={nickName}
+            onChangeText={(e) => setNickName(e)}
+          />
 
-        <Text style={styles.title}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder='Digite seu email'
-          value={email}
-          onChangeText={(e) => setEmail(e)}
-          keyboardType='email-address'
-        />
+          <Text style={styles.title}>Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Digite seu email'
+            value={email}
+            onChangeText={(e) => setEmail(e)}
+            keyboardType='email-address'
+          />
 
-        <View style={styles.select}>
-          <Select
-            name={kinship.description}
-            value={kinship.description}
-            icon={kinship.icon}>
-            {listKinship.map((item) => {
-              return (
-                <List.Item
-                  key={item.id}
-                  title={item.description}
-                  value={item.id}
-                  onPress={() => handleChangeKinship(item)}
-                  left={(props) => (
-                    <List.Icon
-                      {...props}
-                      icon={item.icon}
-                      color='#FFF'
-                      style={styles.icon}
-                    />
-                  )}
-                />
-              )
-            })}
-          </Select>
-        </View>
-        <Text style={styles.title}>Senha</Text>
-        <TextInput
-          style={styles.input}
-          placeholder='Digite sua senha'
-          value={password}
-          onChangeText={(e) => setPassword(e)}
-          secureTextEntry={true}
-        />
+          <View style={styles.select}>
+            <Select
+              name={kinship.description}
+              value={kinship.description}
+              icon={kinship.icon}>
+              {listKinship.map((item) => {
+                return (
+                  <List.Item
+                    key={item.id}
+                    title={item.description}
+                    value={item.id}
+                    onPress={() => handleChangeKinship(item)}
+                    left={(props) => (
+                      <List.Icon
+                        {...props}
+                        icon={item.icon}
+                        color='#FFF'
+                        style={styles.icon}
+                      />
+                    )}
+                  />
+                )
+              })}
+            </Select>
+          </View>
+          <Text style={styles.title}>Senha</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Digite sua senha'
+            value={password}
+            onChangeText={(e) => setPassword(e)}
+            secureTextEntry={true}
+          />
 
-        <Text style={styles.title}>Confirmar a senha</Text>
-        <TextInput
-          style={styles.input}
-          placeholder='Confirme sua senha'
-          value={confirmPassword}
-          onChangeText={(e) => setConfirmPassword(e)}
-          secureTextEntry={true}
-        />
+          <Text style={styles.title}>Confirmar a senha</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Confirme sua senha'
+            value={confirmPassword}
+            onChangeText={(e) => setConfirmPassword(e)}
+            secureTextEntry={true}
+          />
 
-        <TouchableOpacity style={styles.button} onPress={createUser}>
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        </TouchableOpacity>
-      </Animatable.View>
-    </View>
+          <TouchableOpacity style={styles.button} onPress={createUser}>
+            <Text style={styles.buttonText}>Cadastrar</Text>
+          </TouchableOpacity>
+        </Animatable.View>
+      </View>
+    </ScrollView>
   )
 }
 

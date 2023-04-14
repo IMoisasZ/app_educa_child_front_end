@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native"
 import { AuthContext } from "../contexts/auth"
-// import { listKinship } from "../utils/defaultList"
+import { listKinship } from "../utils/defaultList"
 import UserAccountEdit from "./UserAccountEdit"
 import * as Animatable from "react-native-animatable"
 
@@ -24,14 +24,17 @@ export default function UserAccount() {
   const [status, setStatus] = useState("user")
 
   const { logOut, userLogned } = useContext(AuthContext)
-
+  console.log(userLogned)
   useEffect(() => {
     setName(userLogned.name)
     setLastName(userLogned.lastName)
     setNickname(userLogned.nickName)
     setEmail(userLogned.email)
     setPassword("*****")
-    // setKinship(kinshipUser.description)
+    const dataKinship = listKinship.find(
+      (it) => it.id === userLogned.kinship_id
+    )
+    setKinship(dataKinship.description)
   }, [])
 
   return (

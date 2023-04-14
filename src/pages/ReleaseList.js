@@ -100,7 +100,7 @@ export default function ReleaseList({ screen, editRelease, status, nameBtn }) {
         <TouchableOpacity
           onPress={() => screen("release")}
           style={styles.button}>
-          <Text style={styles.buttonText}>Incluir Evento</Text>
+          <Text style={styles.buttonText}>Incluir Mérito/Demérito</Text>
         </TouchableOpacity>
       </Animatable.View>
       <SafeAreaView style={styles.container_flat}>
