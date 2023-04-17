@@ -8,7 +8,9 @@ export default function DataPicker({
   handleYear,
   valueYear,
   dateEvent = "Data do evento:",
-  disabled = false,
+  handleCompleteDateDay,
+  handleCompleteDateMonth,
+  handleCompleteDateYear,
 }) {
   return (
     <View style={styles.container}>
@@ -21,6 +23,7 @@ export default function DataPicker({
             placeholder='Dia'
             value={Number(valueDay)}
             onChangeText={handleDay}
+            onBlur={handleCompleteDateDay}
             keyboardType='numeric'
           />
         </View>
@@ -32,6 +35,7 @@ export default function DataPicker({
             placeholder='Mês'
             value={valueMonth}
             onChangeText={handleMonth}
+            onBlur={handleCompleteDateMonth}
             keyboardType='numeric'
           />
         </View>
@@ -43,6 +47,7 @@ export default function DataPicker({
             placeholder='Ano'
             value={valueYear}
             onChangeText={handleYear}
+            onBlur={handleCompleteDateYear}
             keyboardType='numeric'
           />
         </View>
@@ -56,6 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFAFA",
     padding: "5%",
     borderRadius: 10,
+    marginTop: "5%",
   },
   containerForm: {
     flexDirection: "row",

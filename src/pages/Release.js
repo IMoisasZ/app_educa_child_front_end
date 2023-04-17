@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from "react-native"
 import { List } from "react-native-paper"
 import Select from "../components/Select"
@@ -40,6 +41,7 @@ export default function Release() {
   const [editRelease, setEditRelease] = useState("")
   const [nameBtn, setNameBtn] = useState("Incluir Mérito")
   const [status, setStatus] = useState("normal")
+  const [messageDate, setMessageDate] = useState("")
 
   // userContext
   const { userLogned } = useContext(AuthContext)
@@ -99,6 +101,8 @@ export default function Release() {
     }
   }
 
+  console.log(date)
+
   // function to create a release on db
   const handleCreateRelease = async () => {
     const newRelease = {
@@ -106,7 +110,7 @@ export default function Release() {
       type: isSwitchOnDemerito ? "demerito" : "merito",
       child_id: child.id,
       event_id: event.id,
-      date,
+      date: `${date.split("/")[2]}/${date.split("/")[1]}/${date.split("/")[0]}`,
       description,
       point: points,
       idEventData,
@@ -121,7 +125,7 @@ export default function Release() {
           handleClear()
         }, 2000)
       } catch (error) {
-        showToast(error)
+        showToast(error.response.data.msg)
       }
     } else {
       try {
@@ -134,7 +138,7 @@ export default function Release() {
           handleClear()
         }, 2000)
       } catch (error) {
-        console.log(error)
+        showToast(error.response.data.msg)
       }
     }
   }
@@ -162,10 +166,11 @@ export default function Release() {
     setNameBtn("Incluir Mérito")
     setStatus("normal")
     setGender("")
+    setMessageDate("")
   }
 
   useEffect(() => {
-    if (editRelease !== "") {
+    if (editRelease) {
       if (editRelease.type === "merito") {
         setIsSwitchOnMerito(true)
         setIsSwitchOnDemerito(false)
@@ -176,14 +181,13 @@ export default function Release() {
       setChild({ id: editRelease.child.id, name: editRelease.child.name })
       setEvent({ description: editRelease.event.description, icon: "calendar" })
       setDate(
-        `${
-          new Date(editRelease.date).getDate() < 10 &&
-          "0" + new Date(editRelease.date).getDate()
-        }/${
-          new Date(editRelease.date).getMonth() + 1 < 10 &&
-          `0${new Date(editRelease.date).getMonth() + 1}`
-        }/${new Date(editRelease.date).getFullYear()}`
+        `${editRelease.date.split("-")[2].substring(0, 2).toString()}/${
+          editRelease.date.split("-")[1]
+        }/${editRelease.date.split("-")[0]}`
       )
+      setDay("")
+      setMonth("")
+      setYear("")
       setDescription(editRelease.description)
       setPoints(editRelease.point.toString())
       setGender(editRelease.child.gender_id)
@@ -191,8 +195,21 @@ export default function Release() {
     }
   }, [editRelease])
 
+  const handleCompleteDate = () => {
+    setMessageDate("")
+    setDate("")
+    if (day && month && year) {
+      const data = `${year}/${month}/${day}`
+      if (new Date(data).getDate() === Number(day)) {
+        setDate(`${day}/${month}/${year}`)
+      } else {
+        setMessageDate("Data inválida!")
+      }
+    }
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {screen === "release" ? (
         <>
           <Animatable.View
@@ -290,14 +307,23 @@ export default function Release() {
             </Select>
 
             <DatePicker
-              dateEvent={date ? `Data: ${date}` : "Data:"}
-              handleDay={(e) => setDay(e)}
+              dateEvent={date ? `Data: ${date}` : "Data: "}
               valueDay={day}
-              handleMonth={(e) => setMonth(e)}
+              handleDay={(e) => setDay(e)}
+              handleCompleteDateDay={handleCompleteDate}
               valueMonth={month}
-              handleYear={(e) => setYear(e)}
+              handleMonth={(e) => setMonth(e)}
+              handleCompleteDateMonth={handleCompleteDate}
               valueYear={year}
+              handleYear={(e) => setYear(e)}
+              handleCompleteDateYear={handleCompleteDate}
+              handleDate={() => handleCompleteDate()}
             />
+            {messageDate ? (
+              <Text style={styles.dataMessage}>{messageDate}</Text>
+            ) : (
+              ""
+            )}
 
             <Text style={styles.title}>Descrição</Text>
             <TextInput
@@ -363,7 +389,10 @@ export default function Release() {
 
                   <TouchableOpacity
                     style={styles.button}
-                    onPress={() => setScreen("list")}>
+                    onPress={() => {
+                      setScreen("list")
+                      handleClear()
+                    }}>
                     <Text style={styles.buttonText}>Apontamentos</Text>
                   </TouchableOpacity>
                 </View>
@@ -404,9 +433,10 @@ export default function Release() {
           editRelease={setEditRelease}
           status={setStatus}
           nameBtn={setNameBtn}
+          clear={handleClear}
         />
       )}
-    </View>
+    </ScrollView>
   )
 }
 
@@ -433,6 +463,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     paddingStart: "5%",
     paddingEnd: "5%",
+    paddingBottom: "18%",
   },
   title: {
     fontSize: 18,
@@ -443,7 +474,7 @@ const styles = StyleSheet.create({
   input: {
     borderBottomWidth: 1,
     height: 30,
-    marginBottom: 12,
+    marginBottom: 10,
     fontSize: 16,
   },
   button: {
@@ -459,5 +490,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 18,
+  },
+  dataMessage: {
+    color: "#FF0000",
+    fontWeight: "bold",
   },
 })

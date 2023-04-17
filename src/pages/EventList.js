@@ -16,7 +16,7 @@ import api from "../api/api"
 import { showToast } from "../utils/toast"
 import * as Animatable from "react-native-animatable"
 
-export default function EventList({ setScreenEvent, editEvent }) {
+export default function EventList({ setScreenEvent, editEvent, clear }) {
   const [listEvent, setListEvent] = useState([])
   const [eventAssociate, setEventAssociate] = useState("")
   const [screen, setScreen] = useState("list")
@@ -62,6 +62,26 @@ export default function EventList({ setScreenEvent, editEvent }) {
     }
   }
 
+  // change date
+  const changeDate = (date) => {
+    const newBirthday = new Date(date)
+    const day =
+      newBirthday.getDate() < Number(10)
+        ? `0${newBirthday.getDate()}`
+        : newBirthday.getDate()
+    const month =
+      newBirthday.getMonth() + 1 < Number(10)
+        ? `0${newBirthday.getMonth() + 1}`
+        : newBirthday.getMonth() + 1
+    const year = newBirthday.getFullYear()
+    return `${day}/${month}/${year}`
+  }
+
+  const handleGoBack = () => {
+    clear()
+    setScreenEvent("create")
+  }
+
   const Item = ({ item }) => (
     <>
       <View style={styles.containerItem}>
@@ -69,7 +89,7 @@ export default function EventList({ setScreenEvent, editEvent }) {
           <List.Icon color='#fff' icon='calendar' style={styles.icon} />
           <Text style={styles.txtEvent}>{item.event}</Text>
           <Text style={styles.description}>{item.description}</Text>
-          <Text style={styles.date}>{item.date}</Text>
+          <Text style={styles.date}>{changeDate(item.date)}</Text>
         </View>
         <View style={styles.viewIcon}>
           <Button
@@ -104,9 +124,7 @@ export default function EventList({ setScreenEvent, editEvent }) {
       {screen === "list" ? (
         <Animatable.View animation='fadeInUp'>
           <Animatable.View animation='fadeInLeft' delay={500}>
-            <TouchableOpacity
-              onPress={() => setScreenEvent("create")}
-              style={styles.button}>
+            <TouchableOpacity onPress={handleGoBack} style={styles.button}>
               <Text style={styles.buttonText}>Incluir Evento</Text>
             </TouchableOpacity>
           </Animatable.View>

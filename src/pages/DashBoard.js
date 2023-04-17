@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react"
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text, StyleSheet, Image } from "react-native"
 import { List } from "react-native-paper"
 import { AuthContext } from "../contexts/auth"
 import api from "../api/api"
@@ -62,6 +62,7 @@ export default function DashBoard() {
                       color: "#fff",
                       fontWeight: "800",
                       fontSize: 22,
+                      width: "100%",
                     }}
                     id='1'
                     style={
@@ -97,10 +98,38 @@ export default function DashBoard() {
                               )
                             }}>
                             <View style={styles.container_points}>
+                              {itemEvent.point >= 7 && (
+                                <View style={{ width: "50%" }}>
+                                  <Image
+                                    source={require("../../assets/avatar_menina_feliz.png")}
+                                    style={{
+                                      resizeMode: "contain",
+                                      width: "100%",
+                                      height: 100,
+                                      padding: 0,
+                                    }}
+                                  />
+                                </View>
+                              )}
+                              {itemEvent.point >= 3 && itemEvent.point <= 6 && (
+                                <View style={{ width: "50%" }}>
+                                  <Image
+                                    source={require("../../assets/avatar_menina_triste.png")}
+                                    style={{
+                                      resizeMode: "contain",
+                                      width: "100%",
+                                      height: 100,
+                                      padding: 0,
+                                    }}
+                                  />
+                                </View>
+                              )}
                               <View style={styles.point}>
-                                <Text style={styles.text_points}>
-                                  {itemEvent.point}
-                                </Text>
+                                <View>
+                                  <Text style={styles.text_points}>
+                                    {itemEvent.point}
+                                  </Text>
+                                </View>
                                 <Text style={styles.text_points_name}>
                                   Pontos
                                 </Text>
@@ -184,7 +213,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
-    paddingRight: 50,
+    paddingRight: 150,
   },
 
   point: {
@@ -192,7 +221,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: "#3CB371",
     marginVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
     paddingVertical: 10,
     textAlign: "center",
   },

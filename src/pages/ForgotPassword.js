@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import React, { useState } from "react"
+import { showToast } from "../utils/toast"
 import {
   View,
   Text,
@@ -7,20 +8,57 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native"
-import Button from "../components/Button"
-import Input from "../components/Input"
 import * as Animatable from "react-native-animatable"
+import { sendPasswordResetEmail, getAuth } from "firebase/auth"
+import api from "../api/api"
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("")
+  const [status, setStatus] = useState(false)
 
-  const navigation = useNavigation()
+  const auth = getAuth()
+
+  const handleDataUser = async () => {
+    try {
+      const response = await api.get(`/user/email/email_user?email=${email}`)
+      if (response.data.name) {
+        setStatus(true)
+      }
+      return response.data
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
+  const handleSendEmailForRedefinitionPassword = async (status) => {
+    const response = await handleDataUser()
+    console.log(response)
+    if (response) {
+      setStatus(true)
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          // Password reset email sent!
+          // ..
+          setTimeout(() => {
+            setStatus(false)
+            setEmail("")
+          }, 5000)
+        })
+        .catch((error) => {
+          const errorCode = error.code
+          const errorMessage = error.message
+          // ..
+        })
+    } else {
+      showToast("Email não cadastrado em nosso banco de dados!")
+    }
+  }
 
   return (
     <View style={styles.container}>
       <Animatable.View style={styles.containerHeader} animation='fadeInLeft'>
         <Text style={styles.message}>
-          Digite o email cadastrado para que possamos enviar uma nova senha.
+          Digite o email cadastrado para redefinir sua senha.
         </Text>
       </Animatable.View>
 
@@ -30,14 +68,29 @@ export default function ForgotPassword() {
           style={styles.input}
           placeholder='Digite o email cadastrado'
           value={email}
-          onChange={(e) => setEmail(e)}
+          onChangeText={(e) => setEmail(e)}
           keyboardType='email-address'
         />
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("SignIn")}>
+          onPress={handleSendEmailForRedefinitionPassword}>
           <Text style={styles.buttonText}>Enviar</Text>
         </TouchableOpacity>
+        <View>
+          {status === true && (
+            <View style={styles.viewMessages}>
+              <Text style={styles.textMessage}>
+                * Email para recuperação de senha enviado com sucesso!
+              </Text>
+              <Text style={styles.textMessage}>
+                * Verifique sua caixa de email.
+              </Text>
+              <Text style={styles.textMessage}>
+                * Caso não tenha recebido o email, refaça o processo!
+              </Text>
+            </View>
+          )}
+        </View>
       </Animatable.View>
     </View>
   )
@@ -97,5 +150,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 18,
+  },
+  viewMessages: {
+    justifyContent: "center",
+  },
+  textMessage: {
+    marginTop: "3%",
+    fontSize: 16,
+    width: "100%",
+    fontWeight: "600",
+    color: "#8A2BE2",
+    textAlign: "justify",
   },
 })

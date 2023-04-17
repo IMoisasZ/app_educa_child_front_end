@@ -8,10 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native"
 import { List } from "react-native-paper"
-import Container from "../components/Container"
-import Input from "../components/Input"
 import DatePicker from "../components/DatePicker"
-import Button from "../components/Button"
 import { useNavigation } from "@react-navigation/native"
 import { AuthContext } from "../contexts/auth"
 import { showToast } from "../utils/toast"
@@ -32,6 +29,7 @@ export default function Event() {
   const [date, setDate] = useState("")
   const [screen, setScreen] = useState("create")
   const [editEvent, setEditEvent] = useState("")
+  const [messageDate, setMessageDate] = useState("")
 
   const { userLogned } = useContext(AuthContext)
 
@@ -65,7 +63,7 @@ export default function Event() {
           handleClear()
         }, 2000)
       } catch (error) {
-        showToast(error)
+        showToast(error.response.data.msg)
       }
     } else {
       console.log("here")
@@ -102,8 +100,17 @@ export default function Event() {
     }
   }, [editEvent])
 
-  const handleCompleteDate = (day, month, year) => {
-    return `${day}/${month}/${year}`
+  const handleCompleteDate = () => {
+    setMessageDate("")
+    setDate("")
+    if (day && month && year) {
+      const data = `${year}/${month}/${day}`
+      if (new Date(data).getDate() === Number(day)) {
+        setDate(`${day}/${month}/${year}`)
+      } else {
+        setMessageDate("Data inválida!")
+      }
+    }
   }
 
   const handleClear = () => {
@@ -117,6 +124,7 @@ export default function Event() {
     setDate("")
     setScreen("create")
     setEditEvent("")
+    setMessageDate("")
   }
 
   return (
@@ -157,15 +165,15 @@ export default function Event() {
             <Text style={styles.title}>Evento</Text>
             <TextInput
               style={styles.input}
-              onChange={(e) => setEvent(e)}
+              onChangeText={(e) => setEvent(e)}
               value={event}
               placeholder='Nome do evento'
             />
 
             <Text style={styles.title}>Descrição do evento</Text>
             <TextInput
-              style={styles.input}
-              onChange={(e) => setDescription(e)}
+              style={[styles.input, { height: "15%" }]}
+              onChangeText={(e) => setDescription(e)}
               value={description}
               placeholder='Digite uma breve descrição do evento'
               multiline={true}
@@ -173,26 +181,24 @@ export default function Event() {
             />
 
             <DatePicker
-              dateEvent={
-                editEvent
-                  ? `Data do evento: ${handleCompleteDate(
-                      editEvent.dayDate < 10
-                        ? `0${editEvent.dayDate}`
-                        : editEvent.dayDate,
-                      editEvent.monthDate < 10
-                        ? `0${editEvent.monthDate}`
-                        : editEvent.monthDate,
-                      editEvent.yearDate
-                    )}`
-                  : "Data do evento:"
-              }
-              handleDay={(e) => setDay(e)}
+              dateEvent={date ? `Data do evento: ${date}` : "Data do evento: "}
               valueDay={day}
-              handleMonth={(e) => setMonth(e)}
+              handleDay={(e) => setDay(e)}
+              handleCompleteDateDay={handleCompleteDate}
               valueMonth={month}
-              handleYear={(e) => setYear(e)}
+              handleMonth={(e) => setMonth(e)}
+              handleCompleteDateMonth={handleCompleteDate}
               valueYear={year}
+              handleYear={(e) => setYear(e)}
+              handleCompleteDateYear={handleCompleteDate}
+              handleDate={() => handleCompleteDate()}
             />
+
+            {messageDate ? (
+              <Text style={styles.dataMessage}>{messageDate}</Text>
+            ) : (
+              ""
+            )}
 
             <TouchableOpacity
               onPress={() => handleCreateEvent()}
@@ -277,5 +283,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 18,
+  },
+  dataMessage: {
+    color: "#FF6347",
+    fontWeight: "500",
   },
 })

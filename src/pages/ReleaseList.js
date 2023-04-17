@@ -63,6 +63,21 @@ export default function ReleaseList({ screen, editRelease, status, nameBtn }) {
     }
   }
 
+  // change date
+  const changeDate = (date) => {
+    const newBirthday = new Date(date)
+    const day =
+      newBirthday.getDate() < Number(10)
+        ? `0${newBirthday.getDate()}`
+        : newBirthday.getDate()
+    const month =
+      newBirthday.getMonth() + 1 < Number(10)
+        ? `0${newBirthday.getMonth() + 1}`
+        : newBirthday.getMonth() + 1
+    const year = newBirthday.getFullYear()
+    return `${day}/${month}/${year}`
+  }
+
   const Item = ({ item }) => (
     <View
       style={
@@ -76,6 +91,7 @@ export default function ReleaseList({ screen, editRelease, status, nameBtn }) {
       <Text style={styles.item}>Evento: {item.event.event}</Text>
       <Text style={styles.item}>Pontos: {item.point}</Text>
       <Text style={styles.item}>Descrição:</Text>
+      <Text style={styles.item}>Data: {changeDate(item.date)}</Text>
       <Text style={styles.itemDescription}>{item.description}</Text>
       <View style={styles.buttonView}>
         <Button
@@ -108,6 +124,7 @@ export default function ReleaseList({ screen, editRelease, status, nameBtn }) {
           data={listRelease}
           renderItem={({ item }) => <Item item={item} />}
           keyExtractor={(item) => String(item.id)}
+          showsHorizontalScrollIndicator={false}
         />
       </SafeAreaView>
     </Animatable.View>

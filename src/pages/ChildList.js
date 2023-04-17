@@ -5,8 +5,6 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  ScrollView,
-  Touchable,
   TouchableOpacity,
 } from "react-native"
 import { List } from "react-native-paper"
@@ -37,8 +35,6 @@ export default function ChildList({ setType, editChild, typeHttp, clear }) {
     }
   }
 
-  console.log(listChild)
-
   // change birthday
   const changeBirthday = (date) => {
     const newBirthday = new Date(date)
@@ -47,9 +43,9 @@ export default function ChildList({ setType, editChild, typeHttp, clear }) {
         ? `0${newBirthday.getDate()}`
         : newBirthday.getDate()
     const month =
-      newBirthday.getMonth() < Number(10)
-        ? `0${newBirthday.getMonth()}`
-        : newBirthday.getMonth()
+      newBirthday.getMonth() + 1 < Number(10)
+        ? `0${newBirthday.getMonth() + 1}`
+        : newBirthday.getMonth() + 1
     const year = newBirthday.getFullYear()
     return `${day}/${month}/${year}`
   }
@@ -151,6 +147,7 @@ export default function ChildList({ setType, editChild, typeHttp, clear }) {
       </Animatable.View>
       <SafeAreaView>
         <FlatList
+          showsVerticalScrollIndicator={false}
           style={styles.flatList}
           data={listChild}
           renderItem={renderItem}
@@ -164,7 +161,7 @@ export default function ChildList({ setType, editChild, typeHttp, clear }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom: "8%",
+    marginBottom: "15%",
     paddingStart: "5%",
     paddingEnd: "5%",
   },
@@ -223,7 +220,7 @@ const styles = StyleSheet.create({
 
   item_feminino: {
     backgroundColor: "#BA55D3",
-    marginBottom: 10,
+    marginBottom: 15,
     padding: 20,
     flexDirection: "row",
     borderRadius: 15,
@@ -231,7 +228,7 @@ const styles = StyleSheet.create({
 
   item_masculino: {
     backgroundColor: "#836FFF",
-    marginBottom: 10,
+    marginBottom: 15,
     padding: 20,
     flexDirection: "row",
     borderRadius: 15,

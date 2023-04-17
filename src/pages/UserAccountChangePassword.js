@@ -23,6 +23,7 @@ export default function UserAccountChangePassword({ statusChangePassword }) {
   const auth = getAuth()
   const { userLogned } = useContext(AuthContext)
   const user = auth.currentUser
+  console.log(user)
 
   const handleReautenticUser = () => {
     // TODO(you): prompt the user to re-provide their sign-in credentials

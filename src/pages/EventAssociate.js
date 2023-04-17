@@ -3,10 +3,8 @@ import {
   View,
   StyleSheet,
   Text,
-  SafeAreaView,
   FlatList,
   TouchableOpacity,
-  ScrollView,
   TextInput,
 } from "react-native"
 import { List } from "react-native-paper"
@@ -32,6 +30,21 @@ export default function EventAssociate({ setScreen, event }) {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  // change birthday
+  const changeBirthday = (date) => {
+    const newBirthday = new Date(date)
+    const day =
+      newBirthday.getDate() < Number(10)
+        ? `0${newBirthday.getDate()}`
+        : newBirthday.getDate()
+    const month =
+      newBirthday.getMonth() + 1 < Number(10)
+        ? `0${newBirthday.getMonth() + 1}`
+        : newBirthday.getMonth() + 1
+    const year = newBirthday.getFullYear()
+    return `${day}/${month}/${year}`
   }
 
   const allChildAssociated = async () => {
@@ -72,14 +85,19 @@ export default function EventAssociate({ setScreen, event }) {
     <TouchableOpacity
       onPress={() => handleSelectedChild(item.id)}
       style={styles.item}>
-      <View style={styles.containerItem}>
+      <View
+        style={
+          item.gender_id === Number(1) ? styles.itemMenino : styles.itemMenina
+        }>
         <View style={styles.data_child}>
           <List.Icon color='#fff' icon='calendar' style={styles.icon} />
           <Text style={styles.nome}>
             Nome: {item.name} {item.lastName}
           </Text>
           <Text style={styles.apelido}>Apelido: {item.nickName}</Text>
-          <Text style={styles.data}>Data de nascimento: {item.birthDay}</Text>
+          <Text style={styles.data}>
+            Data de nascimento: {changeBirthday(item.birthday)}
+          </Text>
         </View>
         <View style={styles.selected}>
           {!listChildrenAssociated.find(
@@ -122,7 +140,10 @@ export default function EventAssociate({ setScreen, event }) {
       setTimeout(() => {
         handleListEvents()
       }, 2000)
-    } catch (error) {}
+    } catch (error) {
+      console.log(error.response.data.msg)
+      showToast(error.response.data.msg)
+    }
   }
 
   const handleListEvents = () => {
@@ -131,6 +152,23 @@ export default function EventAssociate({ setScreen, event }) {
 
   return (
     <Animatable.View animation='fadeInUp' style={styles.container}>
+      <View style={styles.viewBtns}>
+        <View style={styles.viewBtn}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleCreateAssociate}>
+            <Text style={styles.buttonText}>Associar</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.viewBtn}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => handleListEvents()}>
+            <Text style={styles.buttonText}>Meus Eventos</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <View style={styles.inputView}>
         <Text style={styles.title}>Evento</Text>
         <TextInput
@@ -140,30 +178,20 @@ export default function EventAssociate({ setScreen, event }) {
           editable={false}
         />
       </View>
-
-      <View style={styles.container_flat}>
-        <SafeAreaView>
-          <FlatList
-            data={listChildren}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-          />
-        </SafeAreaView>
-      </View>
-      <TouchableOpacity style={styles.button} onPress={handleCreateAssociate}>
-        <Text style={styles.buttonText}>Associar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => handleListEvents()}>
-        <Text style={styles.buttonText}>Meus Eventos</Text>
-      </TouchableOpacity>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={listChildren}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
     </Animatable.View>
   )
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: "50%",
+  },
   button: {
     backgroundColor: "#9370DB",
     width: "100%",
@@ -263,5 +291,29 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFAFA",
     borderRadius: 5,
     textAlign: "center",
+  },
+  viewBtns: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  viewBtn: {
+    width: "45%",
+  },
+  itemMenina: {
+    backgroundColor: "#BA55D3",
+    marginBottom: 15,
+    padding: 20,
+    flexDirection: "row",
+    borderRadius: 15,
+  },
+
+  itemMenino: {
+    backgroundColor: "#836FFF",
+    marginBottom: 15,
+    padding: 20,
+    flexDirection: "row",
+    borderRadius: 15,
   },
 })
