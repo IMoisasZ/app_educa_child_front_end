@@ -37,9 +37,7 @@ export default function Child() {
   const [messageDate, setMessageDate] = useState("")
 
   // context user logned
-  const { userLogned } = useContext(AuthContext)
-
-  console.log(gender)
+  const { userLogned, executeDashboard } = useContext(AuthContext)
 
   // create a child
   const handleCreateChild = async () => {
@@ -60,6 +58,7 @@ export default function Child() {
         showToast(`Filho incluído com sucesso!`)
         setTimeout(() => {
           handleClear()
+          executeDashboard()
         }, 2000)
       } catch (error) {
         showToast(error.response.data.msg)
@@ -69,7 +68,10 @@ export default function Child() {
       try {
         await api.patch("child", childEditing)
         showToast(`Filho alterado com sucesso!`)
-        handleClear()
+        setTimeout(() => {
+          handleClear()
+          executeDashboard()
+        }, 2000)
       } catch (error) {}
     }
   }
@@ -79,10 +81,16 @@ export default function Child() {
     setName("")
     setLastName("")
     setNickName("")
+    setGender({
+      icon: "human-male-female",
+      gender: "Menino/Menina",
+    })
     setDay("")
     setMonth("")
     setYear("")
     setDate("")
+    setEditChild("")
+    setType("child")
     setTypeHttp("post")
     setMessageDate("")
   }

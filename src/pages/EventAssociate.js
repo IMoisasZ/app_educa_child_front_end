@@ -19,8 +19,9 @@ export default function EventAssociate({ setScreen, event }) {
   const [listChildren, setListChildren] = useState([])
   const [childAssociated, setChildAssociated] = useState("")
   const [listChildrenAssociated, setListChildrenAssociated] = useState([])
+  const [helperMessage, setHelperMessage] = useState("")
 
-  const { userLogned } = useContext(AuthContext)
+  const { userLogned, executeDashboard } = useContext(AuthContext)
   const { id } = userLogned
 
   const allChildren = async () => {
@@ -49,7 +50,7 @@ export default function EventAssociate({ setScreen, event }) {
 
   const allChildAssociated = async () => {
     try {
-      const response = await api.get(`/event_data/all/${userLogned}}`)
+      const response = await api.get(`/event_data/all/${userLogned.id}}`)
       setListChildrenAssociated(response.data)
     } catch (error) {
       showToast(error)
@@ -71,6 +72,7 @@ export default function EventAssociate({ setScreen, event }) {
       showToast("Evento não mais associado a criança!")
       setTimeout(() => {
         setScreen("list")
+        executeDashboard()
       }, 2000)
     } catch (error) {
       showToast(error)
@@ -91,6 +93,7 @@ export default function EventAssociate({ setScreen, event }) {
         }>
         <View style={styles.data_child}>
           <List.Icon color='#fff' icon='calendar' style={styles.icon} />
+
           <Text style={styles.nome}>
             Nome: {item.name} {item.lastName}
           </Text>
@@ -98,10 +101,23 @@ export default function EventAssociate({ setScreen, event }) {
           <Text style={styles.data}>
             Data de nascimento: {changeBirthday(item.birthday)}
           </Text>
+          {listChildrenAssociated.find(
+            (child) => child.child_id === item.id && child.event_id === event.id
+          ) && (
+            <View>
+              <Text
+                style={{
+                  color: "#fff",
+                  fontStyle: "italic",
+                }}>
+                *** Criança associada ao evento ***
+              </Text>
+            </View>
+          )}
         </View>
         <View style={styles.selected}>
           {!listChildrenAssociated.find(
-            (child) => child.child_id === item.id
+            (child) => child.child_id === item.id && child.event_id === event.id
           ) ? (
             <View>
               {childAssociated === item.id && (
@@ -139,6 +155,7 @@ export default function EventAssociate({ setScreen, event }) {
       showToast("Evento associado a criança!")
       setTimeout(() => {
         handleListEvents()
+        executeDashboard()
       }, 2000)
     } catch (error) {
       console.log(error.response.data.msg)
@@ -171,6 +188,7 @@ export default function EventAssociate({ setScreen, event }) {
       </View>
       <View style={styles.inputView}>
         <Text style={styles.title}>Evento</Text>
+
         <TextInput
           style={styles.input}
           value={event.event}

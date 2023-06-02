@@ -3,13 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  KeyboardAvoidingView,
   TextInput,
   TouchableOpacity,
 } from "react-native"
 import { List } from "react-native-paper"
 import DatePicker from "../components/DatePicker"
-import { useNavigation } from "@react-navigation/native"
 import { AuthContext } from "../contexts/auth"
 import { showToast } from "../utils/toast"
 import EventList from "./EventList"
@@ -32,29 +30,18 @@ export default function Event() {
   const [messageDate, setMessageDate] = useState("")
 
   const { userLogned } = useContext(AuthContext)
-
-  const navigation = useNavigation()
-
-  useEffect(() => {
-    if (day && month && year) {
-      setDate(`${day}/${month}/${year}`)
-    } else if (day) {
-      setDate(`${day}/`)
-    } else if (day && month) {
-      setDate(`${day}/${month}/`)
-    } else {
-      setDate("")
-    }
-  }, [day, month, year])
+  console.log(userLogned)
 
   const handleCreateEvent = async () => {
     if (editEvent === "") {
       const newEvent = {
-        user_id: userLogned,
+        user_id: userLogned.id,
         typeEvent_id: type.id,
         event,
         description,
-        date,
+        date: `${date.split("/")[2]}/${date.split("/")[1]}/${
+          date.split("/")[0]
+        }`,
       }
       try {
         await api.post("/event", newEvent)
@@ -66,13 +53,14 @@ export default function Event() {
         showToast(error.response.data.msg)
       }
     } else {
-      console.log("here")
       await api.patch("/event", {
-        id: 1,
+        id: editEvent.id,
         type_event: type,
         event,
         description,
-        date,
+        date: `${editEvent.date.split("/")[2]}/${
+          editEvent.date.split("/")[1]
+        }/${editEvent.date.split("/")[0]}`,
       })
       showToast("Evento editado com sucesso!")
       setTimeout(() => {
@@ -97,6 +85,11 @@ export default function Event() {
       })
       setEvent(editEvent.event)
       setDescription(editEvent.description)
+      setDate(
+        `${editEvent.date.split("-")[2].substring(0, 2).toString()}/${
+          editEvent.date.split("-")[1]
+        }/${editEvent.date.split("-")[0]}`
+      )
     }
   }, [editEvent])
 
@@ -218,7 +211,11 @@ export default function Event() {
         </View>
       ) : (
         <View style={styles.container}>
-          <EventList setScreenEvent={setScreen} editEvent={setEditEvent} />
+          <EventList
+            setScreenEvent={setScreen}
+            editEvent={setEditEvent}
+            clear={handleClear}
+          />
         </View>
       )}
     </>

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
+  ScrollView,
 } from "react-native"
 import Button from "../components/Button"
 import { AuthContext } from "../contexts/auth"
@@ -42,7 +43,7 @@ export default function ReleaseList({ screen, editRelease, status, nameBtn }) {
       await api.delete(`release`, {
         data,
       })
-      showToast("Apontamento excluído com sucesso!")
+      showToast("Apontamento deletado com sucesso!")
       setTimeout(() => {
         allReleases()
       }, 2000)
@@ -90,9 +91,11 @@ export default function ReleaseList({ screen, editRelease, status, nameBtn }) {
       </Text>
       <Text style={styles.item}>Evento: {item.event.event}</Text>
       <Text style={styles.item}>Pontos: {item.point}</Text>
-      <Text style={styles.item}>Descrição:</Text>
       <Text style={styles.item}>Data: {changeDate(item.date)}</Text>
-      <Text style={styles.itemDescription}>{item.description}</Text>
+      <View style={{ flexDirection: "row" }}>
+        <Text style={[styles.item, { paddingRight: 5 }]}>Descrição:</Text>
+        <Text style={styles.itemDescription}>{item.description}</Text>
+      </View>
       <View style={styles.buttonView}>
         <Button
           nameBtn=''
@@ -110,6 +113,9 @@ export default function ReleaseList({ screen, editRelease, status, nameBtn }) {
     </View>
   )
 
+  // component to render the item
+  const renderItem = ({ item }) => <Item item={item} />
+
   return (
     <Animatable.View animation='fadeInUp' style={styles.container}>
       <Animatable.View animation='fadeInLeft' delay={500}>
@@ -119,12 +125,12 @@ export default function ReleaseList({ screen, editRelease, status, nameBtn }) {
           <Text style={styles.buttonText}>Incluir Mérito/Demérito</Text>
         </TouchableOpacity>
       </Animatable.View>
-      <SafeAreaView style={styles.container_flat}>
+      <SafeAreaView>
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={listRelease}
-          renderItem={({ item }) => <Item item={item} />}
-          keyExtractor={(item) => String(item.id)}
-          showsHorizontalScrollIndicator={false}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
         />
       </SafeAreaView>
     </Animatable.View>

@@ -21,7 +21,7 @@ export default function DataPicker({
           <TextInput
             style={styles.input}
             placeholder='Dia'
-            value={Number(valueDay)}
+            value={valueDay}
             onChangeText={handleDay}
             onBlur={handleCompleteDateDay}
             keyboardType='numeric'

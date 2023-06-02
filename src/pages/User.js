@@ -12,7 +12,11 @@ import { List } from "react-native-paper"
 import { listKinship } from "../utils/defaultList"
 import { useNavigation } from "@react-navigation/native"
 import { showToast } from "../utils/toast"
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  deleteUser,
+} from "firebase/auth"
 import { app } from "../configFirebase/config"
 import api from "../api/api"
 import * as Animatable from "react-native-animatable"
@@ -44,26 +48,21 @@ export default function User() {
 
   // navigation
   const navigation = useNavigation()
-  // function to create an user into firebase
-  const createUserFirebase = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user
-        setUserFirebase(user)
-        // ...
+
+  // delete user
+  const deleteUser = (currentUser) => {
+    const user = currentUser
+    console.log(user)
+    deleteUser(user)
+      .then(() => {
+        showToast("Ocorreu um erro! Usuário não cadastrado!")
       })
       .catch((error) => {
-        const errorCode = error.code
-        const errorMessage = error.message
-        console.log(errorMessage)
-        setMsgError({ ErrorCode: errorCode, MsgError: errorMessage })
-        showToast(errorCode)
-        // ..
+        showToast(error)
       })
   }
 
-  // create an user to mysql and firebase
+  // function to create an user into firebase
   const createUser = async () => {
     if (!name) {
       return showToast("Nome não informado!")
@@ -89,30 +88,46 @@ export default function User() {
     if (password !== confirmPassword) {
       return showToast("As senhas não conferem!")
     }
-    createUserFirebase(email, password)
-    const newUser = {
-      user_id_firebase: userFirebase.uid,
-      name,
-      lastName,
-      nickName,
-      kinship_id: kinship.id,
-      email,
-      password,
-      confirmPassword,
-    }
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user
+        console.debug("uuid---------------------------->", user)
+        const newUser = {
+          user_id_firebase: user.uid,
+          name,
+          lastName,
+          nickName,
+          kinship_id: kinship.id,
+          email,
+          password,
+          confirmPassword,
+        }
+        createUserMysql(newUser, user)
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code
+        const errorMessage = error.message
+        console.log(errorMessage)
+        setMsgError({ ErrorCode: errorCode, MsgError: errorMessage })
+        showToast(errorCode)
+        // ..
+      })
+  }
+
+  // create an user to mysql and firebase
+  const createUserMysql = async (user, currentUser) => {
     try {
-      if (userFirebase.uid) {
-        const response = await api.post(`/user`, newUser)
-        showToast("Usuário cadastrado com sucesso!")
-        setTimeout(() => {
-          navigation.navigate("SignIn")
-        }, 2000)
-        handleClear()
-      } else {
-        showToast(`${msgError.ErrorCode} - ${msgError.MsgError}`)
-      }
+      await api.post(`/user`, user)
+      showToast("Usuário cadastrado com sucesso!")
+      setTimeout(() => {
+        navigation.navigate("SignIn")
+      }, 2000)
+      handleClear()
     } catch (error) {
       console.log({ error })
+      deleteUser(currentUser)
     }
   }
 

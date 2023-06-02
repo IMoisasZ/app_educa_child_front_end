@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  KeyboardAvoidingView,
   ScrollView,
 } from "react-native"
 import { List } from "react-native-paper"
@@ -23,6 +24,7 @@ export default function Release() {
   const [idEventData, setIdEventData] = useState("")
   const [child, setChild] = useState({ id: "", name: "Criança" })
   const [listDataEvent, setListDataEvent] = useState([])
+  const [listDataChildren, setListDataChildren] = useState([])
   const [description, setDescription] = useState("")
   const [background, setBackground] = useState("green")
   const [isSwitchOnMerito, setIsSwitchOnMerito] = useState(true)
@@ -44,7 +46,7 @@ export default function Release() {
   const [messageDate, setMessageDate] = useState("")
 
   // userContext
-  const { userLogned } = useContext(AuthContext)
+  const { userLogned, executeDashboard } = useContext(AuthContext)
 
   // userNavigation
   const user_id = userLogned.id
@@ -59,10 +61,24 @@ export default function Release() {
     }
   }
 
+  // take all children
+  const allChildren = async () => {
+    try {
+      const response = await api.get(`/child/${user_id}`)
+      setListDataChildren(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   // put on select the childreen and events
   useEffect(() => {
     allDataEvents()
+    allChildren()
   }, [])
+
+  console.log(typeof listDataEvent.child)
+  console.log(typeof child.id)
 
   // datePicker
   useEffect(() => {
@@ -101,8 +117,6 @@ export default function Release() {
     }
   }
 
-  console.log(date)
-
   // function to create a release on db
   const handleCreateRelease = async () => {
     const newRelease = {
@@ -123,6 +137,8 @@ export default function Release() {
         )
         setTimeout(() => {
           handleClear()
+          executeDashboard()
+          allChildren()
         }, 2000)
       } catch (error) {
         showToast(error.response.data.msg)
@@ -136,6 +152,7 @@ export default function Release() {
         )
         setTimeout(() => {
           handleClear()
+          executeDashboard()
         }, 2000)
       } catch (error) {
         showToast(error.response.data.msg)
@@ -156,10 +173,10 @@ export default function Release() {
       description: "Evento",
       icon: "calendar",
     })
+    setDate("")
     setDay("")
     setMonth("")
     setYear("")
-    setDate("")
     setPoints(0)
     allDataEvents()
     setEditRelease("")
@@ -170,7 +187,7 @@ export default function Release() {
   }
 
   useEffect(() => {
-    if (editRelease) {
+    if (editRelease !== "") {
       if (editRelease.type === "merito") {
         setIsSwitchOnMerito(true)
         setIsSwitchOnDemerito(false)
@@ -180,14 +197,14 @@ export default function Release() {
       }
       setChild({ id: editRelease.child.id, name: editRelease.child.name })
       setEvent({ description: editRelease.event.description, icon: "calendar" })
+      setDay("")
+      setMonth("")
+      setYear("")
       setDate(
         `${editRelease.date.split("-")[2].substring(0, 2).toString()}/${
           editRelease.date.split("-")[1]
         }/${editRelease.date.split("-")[0]}`
       )
-      setDay("")
-      setMonth("")
-      setYear("")
       setDescription(editRelease.description)
       setPoints(editRelease.point.toString())
       setGender(editRelease.child.gender_id)
@@ -209,9 +226,9 @@ export default function Release() {
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <KeyboardAvoidingView style={styles.container} behavior='height'>
       {screen === "release" ? (
-        <>
+        <ScrollView>
           <Animatable.View
             animation='fadeInLeft'
             delay={500}
@@ -248,18 +265,18 @@ export default function Release() {
                 nameSwitch='Demérito'
               />
             </View>
-
             <Select name={child.name} value={child.id} icon='gift'>
-              {listDataEvent.map((item) => {
+              {listDataChildren.map((item) => {
                 return (
                   <List.Item
-                    key={item.child.id}
-                    title={item.child.name}
-                    value={item.child.id}
+                    key={item.id}
+                    title={item.name}
+                    value={item.id}
                     onPress={() => {
-                      setChild({ id: item.child.id, name: item.child.name })
+                      setChild({ id: item.id, name: item.name })
                       setIdEventData(item.id)
-                      setGender(item.child.gender_id)
+                      setGender(item.gender_id)
+                      allDataEvents()
                     }}
                     left={(props) => (
                       <List.Icon
@@ -305,7 +322,6 @@ export default function Release() {
                   )
                 })}
             </Select>
-
             <DatePicker
               dateEvent={date ? `Data: ${date}` : "Data: "}
               valueDay={day}
@@ -324,7 +340,6 @@ export default function Release() {
             ) : (
               ""
             )}
-
             <Text style={styles.title}>Descrição</Text>
             <TextInput
               style={styles.input}
@@ -334,7 +349,6 @@ export default function Release() {
               multiline={true}
               numberOfLines={2}
             />
-
             <Text style={styles.title}>
               {!isSwitchOnDemerito ? "Pontos de merito" : "Pontos de demerito"}
             </Text>
@@ -349,7 +363,6 @@ export default function Release() {
               }
               keyboardType='numeric'
             />
-
             {gender === "" ? (
               <View>
                 <TouchableOpacity
@@ -426,7 +439,7 @@ export default function Release() {
               </View>
             )}
           </Animatable.View>
-        </>
+        </ScrollView>
       ) : (
         <ReleaseList
           screen={setScreen}
@@ -436,7 +449,7 @@ export default function Release() {
           clear={handleClear}
         />
       )}
-    </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -463,7 +476,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     paddingStart: "5%",
     paddingEnd: "5%",
-    paddingBottom: "18%",
+    paddingBottom: "35%",
   },
   title: {
     fontSize: 18,

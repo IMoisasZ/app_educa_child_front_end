@@ -1,5 +1,5 @@
-import React, { useContext } from "react"
-import { createDrawerNavigator } from "@react-navigation/drawer"
+import React, { useContext, useEffect } from "react"
+import { DrawerItem, createDrawerNavigator } from "@react-navigation/drawer"
 import { defaultBackground } from "../components/Container"
 import {
   MaterialIcons,
@@ -15,17 +15,14 @@ import Event from "../pages/Event"
 import Child from "../pages/Child"
 import Release from "../pages/Release"
 import ShowReleases from "../pages/ShowReleases"
-import { AuthContext } from "../contexts/auth"
 import UserAccount from "../pages/UserAccount"
-import { useNavigation } from "@react-navigation/native"
-import { TouchableOpacity, Text } from "react-native"
+import { AuthContext } from "../contexts/auth"
 
 const Drawer = createDrawerNavigator()
 
 export default function RoutesDrawer() {
   const { userLogned } = useContext(AuthContext)
 
-  const navigation = useNavigation()
   return (
     <Drawer.Navigator
       initialRouteName='Home'

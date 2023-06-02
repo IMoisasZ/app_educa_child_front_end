@@ -89,6 +89,8 @@ export default function ShowReleases() {
     }
   }
 
+  console.log(listRelease)
+
   const Item = ({ item }) => (
     <View style={styles.containerItem}>
       <Text style={styles.item}>Apelido: {item.child.nickName}</Text>

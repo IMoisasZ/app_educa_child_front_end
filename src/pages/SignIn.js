@@ -13,8 +13,8 @@ import * as Animatable from "react-native-animatable"
 
 export default function SignIn() {
   // usestate
-  const [email, setEmail] = useState("mopri08@gmail.com")
-  const [password, setPassword] = useState("123456")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
   // context
   const { login } = useContext(AuthContext)

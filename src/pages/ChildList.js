@@ -20,7 +20,7 @@ export default function ChildList({ setType, editChild, typeHttp, clear }) {
   const [listChild, setListChild] = useState([])
 
   // context user logned
-  const { userLogned } = useContext(AuthContext)
+  const { userLogned, executeDashboard } = useContext(AuthContext)
 
   // variable with the user_id of user logned
   const user_id = userLogned.id
@@ -78,6 +78,7 @@ export default function ChildList({ setType, editChild, typeHttp, clear }) {
       showToast("Filho deletado com sucesso!")
       setTimeout(() => {
         allChildreen()
+        executeDashboard()
       }, 2000)
     } catch (error) {
       showToast("Filho com apontamentos. Não é possivel deletar!")

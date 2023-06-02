@@ -24,7 +24,7 @@ export default function UserAccount() {
   const [status, setStatus] = useState("user")
 
   const { logOut, userLogned } = useContext(AuthContext)
-  console.log(userLogned)
+
   useEffect(() => {
     setName(userLogned.name)
     setLastName(userLogned.lastName)

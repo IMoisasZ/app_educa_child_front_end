@@ -30,7 +30,7 @@ export default function ForgotPassword() {
     }
   }
 
-  const handleSendEmailForRedefinitionPassword = async (status) => {
+  const handleSendEmailForRedefinitionPassword = async () => {
     const response = await handleDataUser()
     console.log(response)
     if (response) {
@@ -47,6 +47,7 @@ export default function ForgotPassword() {
         .catch((error) => {
           const errorCode = error.code
           const errorMessage = error.message
+          console.log({ error })
           // ..
         })
     } else {
